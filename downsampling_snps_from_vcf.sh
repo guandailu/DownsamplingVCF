@@ -37,7 +37,7 @@ fi
 mkdir -p Temp
 
 # compress vcf file
-if [[ ${vcf} =~ ".vcf" ]]
+if [[ ${vcf##*.} == "vcf" ]]
 then
   bgzip ${vcf}
   vcf=${vcf}.gz
