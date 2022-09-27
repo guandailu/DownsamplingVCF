@@ -56,13 +56,13 @@ fi
 num_snps=`zcat ${vcf} |  grep -v "#" | wc -l`
 
 # index of removed SNPs
-TMP_FILE=$(mktemp -p Temp)
+TMP_FILE="$(mktemp Temp/XXXXXXXXXX)"
 shuf -i 1-${num_snps} -n ${subset_num_snps} | sort -k1,1n > ${TMP_FILE}
 
 # subset snps
-TMP_FILE2=$(mktemp -p Temp)
+TMP_FILE2=$(mktemp Temp/XXXXXXXXXX)
 zcat ${vcf} | awk 'FNR==NR{a[$1];next}(FNR in a){print $1"\t"$2}' ${TMP_FILE} - > ${TMP_FILE2}
-cp ${TMP_FILE2} Temp/${vcf}.subsetting.${subset_num_snps}.${TMP_FILE2}.list
+cp ${TMP_FILE2} Temp/${vcf}.subsetting_SNPs.list
 
 # subset SNPs
 echo -e "Generating subsetting vcf...\n"
