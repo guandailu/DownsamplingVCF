@@ -14,7 +14,8 @@ usage(){
   echo "Usage: $0 [vcf] [subset_num_snps] [output_file]
                   [vcf]: vcf file to be subsetted
                   [subset_num_snps]: number of SNPs to be randomly removed
-                  [output_file]: output vcf file name " 1>&2
+                  [snp_list_file]: output file with downsampled SNPs
+		  [output_file]: output vcf file name " 1>&2
 }
 exit_abnormal(){
   usage
@@ -23,10 +24,11 @@ exit_abnormal(){
 
 vcf=$1
 subset_num_snps=$2
-output_file=$3
+snp_list_file=$3
+output_file=$4
 module load bcftools
 
-if [[ $# -ne 3 ]]
+if [[ $# -ne 4 ]]
 then
     echo "Error: Inputs incorrect !!!"
     exit_abnormal
@@ -62,7 +64,8 @@ shuf -i 1-${num_snps} -n ${subset_num_snps} | sort -k1,1n > ${TMP_FILE}
 # subset snps
 TMP_FILE2=$(mktemp Temp/XXXXXXXXXX)
 zcat ${vcf} | grep -v "#" | awk 'FNR==NR{a[$1];next}(FNR in a){print $1"\t"$2}' ${TMP_FILE} - > ${TMP_FILE2}
-cp ${TMP_FILE2} Temp/${vcf}.subsetting_SNPs.list
+cp ${TMP_FILE2} ${snp_list_file}
+#Temp/${vcf}.subsetting_${subset_num_snps}.list
 
 # subset SNPs
 echo -e "Generating subsetting vcf...\n"
